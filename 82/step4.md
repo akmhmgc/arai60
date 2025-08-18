@@ -149,3 +149,38 @@ def delete_duplicates(head)
     dummy_head.next
 end
 ```
+
+> dummy_head と node だけを定義し、 node だけを動かして、同様の処理を書くことはできますか？
+https://github.com/akmhmgc/arai60/pull/4#discussion_r2282167859 を受けて再度コードを書いた
+
+
+```ruby
+# Definition for singly-linked list.
+# class ListNode
+#     attr_accessor :val, :next
+#     def initialize(val = 0, _next = nil)
+#         @val = val
+#         @next = _next
+#     end
+# end
+# @param {ListNode} head
+# @return {ListNode}
+def delete_duplicates(head)
+    dummy_head = ListNode.new(Float::INFINITY, head)
+    node = dummy_head
+
+    while node && node.next && node.next.next
+        if node.next.val == node.next.next.val
+            duplicated_value = node.next.val
+            while node && node.next && node.next.val == duplicated_value
+                node.next = node.next.next
+            end
+            next
+        end
+
+        node = node.next
+    end
+
+    dummy_head.next
+end
+```
