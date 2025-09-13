@@ -43,7 +43,8 @@ end
 という感じ
 
 時間計算量はO(N)で空間計算量はO(1)
-stackの最大の深さはO(logN)なので、Rubyのデフォルトの設定であればStack overflowは起きない。
+stackの最大の深さは~~O(logN)~~ Nで、Nの最大は10^4なのでRubyのデフォルトの設定だと厳し以下もしれない。
+`RUBY_THREAD_VM_STACK_SIZE`を変更する必要がありそう。
 
 ```ruby
 # Definition for a binary tree node.
