@@ -36,3 +36,42 @@ end
 
 > というわけで、書き方を固定してもいいけれども、幅のある表現を読めるようにしてくださいね、ということです。
 https://github.com/Fuminiton/LeetCode/pull/41#discussion_r2080995529
+
+## オプショナルな質問
+https://github.com/Ryotaro25/leetcode_first60/pull/46#discussion_r1869993674
+
+
+```ruby
+# @param {Integer[]} nums
+# @param {Integer} target
+# @return {Integer}
+def search_insert(nums, target)
+    left = 0
+    right = nums.size
+    while left < right
+        middle = (right + left) / 2
+        if nums[middle] >= target
+            right = middle
+        else
+            left = middle + 1
+        end
+    end
+    right
+end
+```
+
+後続の問題を解いていて、理解してなかったことに気づいたので以下を考える。
+`nums.back()`の話はRubyだとわからなかったので一旦飛ばす。
+ref: https://github.com/Ryotaro25/leetcode_first60/pull/46#discussion_r1869993674
+
+### 「2で割る処理がありますがこれは切り捨てでも切り上げでも構わないのでしょうか。」
+たとえば、nums = [0, 1, 2], target = 3の時にleft,rightは0, 3なのでmiddleは2となる。
+nums[middle]は2となり、nums[m] < targetなのでleft = middle + 1 = 2 + 1 = 3となり、leftが更新されずに無限ループになる。
+
+### nums[middle] >= target とありますが、これは > でもいいですか。」
+たとえば、nums = [0, 1, 2], target = 1の時、left,rightは0, 3なのでmiddleは1となる。
+nums[middle]は1となり、nums[middle] > targetを満たさないので、left = 2となって、最終的に2を返す。
+つまり、target以上ではなく、targetより大きくてインデックスが最も小さくなるインデックスを返すことになる。
+
+### 「right の初期値は nums.size - 1 でもいいですか。」
+right == leftが答えになるので、`nums.size`が答えになるパターンで間違った答えを返す。
