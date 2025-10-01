@@ -75,3 +75,104 @@ nums[middle]は1となり、nums[middle] > targetを満たさないので、left
 
 ### 「right の初期値は nums.size - 1 でもいいですか。」
 right == leftが答えになるので、`nums.size`が答えになるパターンで間違った答えを返す。
+
+## 思考の整理
+上でもまだしっくり来なかったので、以下のように整理した。
+### 求めたいもの
+target以上となる最小のインデックス
+
+### 範囲の絞り方
+- left
+	1. 自分より左側はtargetより小さい
+	2. ~~自分より左側はtarget以下~~
+		- これが言えても、targetより右がtarget以上とは言えない（以上かもしれないし、targetより大きいかもしれない）ので使えない
+- right
+	3. 自分を含む右側はtarget以上
+	4. 自分より右側はtarget以上
+
+1と3の組み合わせの場合、left == rightになるまで絞り込めば、leftより左はtargetより小さく、rightを含む右はtarget以上であると言えるのでleft = rightがtarget以上となる最小のインデックスと言える。
+
+1と4の組み合わせの場合、left == right + 1になるまで絞り込めば、leftより左はtargetより小さく、rightより右側はtarget以上なのでleft == right + 1がtarget以上となる最小のインデックスと言える。
+
+### middleの処理
+- middle = (left + right) / 2 とする（切り捨て）
+- middle = (left + right + 1) / 2 とする（切り上げ）
+
+切り捨てではmiddleがleftと一致することがあるし、切り上げではmiddleがrightと一致することがある。
+
+範囲の絞り方の1と3の組み合わせの場合は以下のように考える。
+middleの値がtargetより小さいときは、leftをmiddle + 1に更新すれば、leftより左はtargetより小さいと言える。
+middleの値がtarget以上であれば、rightをmiddleに更新すればrightを含む右はtarget以上だと言える。
+rightをmiddleに更新するので、切り上げのパターンではright更新されないことがあり、無限ループになる。
+なので切り上げの考えは使えない。
+
+```ruby
+def search_insert(nums, target)
+    left = 0 # leftより左側はtargetより小さい
+    right = nums.size # rightを含む右側はtarget以上
+    while left < right # 停止条件はleft == right
+        middle = (right + left) / 2 # 切り捨て
+        if nums[middle] >= target
+            right = middle # rightを含む右はtarget以上だと言える
+        else
+            left = middle + 1 # leftより左はtargetより小さいと言える
+        end
+    end
+    left
+end
+```
+
+これは動かない
+```ruby
+def search_insert(nums, target)
+    left = 0 # leftより左側はtargetより小さい
+    right = nums.size # rightを含む右側はtarget以上
+    while left < right # 停止条件はleft == right
+        middle = (right + left + 1) / 2 # 切り上げ
+        if nums[middle] >= target
+            # middle == rightになり、更新されなくて無限ループになり得る
+            right = middle # rightを含む右はtarget以上だと言える
+        else
+            left = middle + 1 # leftより左はtargetより小さいと言える
+        end
+    end
+    left
+end
+```
+
+範囲の絞り方の1と4の組み合わせの場合は以下のように考える。
+middleの値がtargetより小さいときは、leftをmiddle + 1に更新すれば、leftより左はtargetより小さいと言える。
+middleの値がtarget以上であれば、rightをmiddle - 1に更新すればrightより右はtarget以上だと言える。
+この場合は、切り上げでも切り捨てでもmiddleがleft,right両方ともに一致することがないので無限ループせずに動く。
+
+```ruby
+def search_insert(nums, target)
+    left = 0 # leftより左側はtargetより小さい
+    right = nums.size - 1 # rightより右側はtarget以上
+    while left <= right # 停止条件はleft == right + 1
+        middle = (right + left) / 2 # 切り捨て
+        if nums[middle] >= target
+            right = middle - 1 # rightより右はtarget以上だと言える
+        else
+            left = middle + 1 # leftより左はtargetより小さいと言える
+        end
+    end
+    left
+end
+```
+
+```ruby
+def search_insert(nums, target)
+    left = 0 # leftより左側はtargetより小さい
+    right = nums.size - 1 # rightより右側はtarget以上
+    while left <= right # 停止条件はleft == right + 1
+        middle = (right + left + 1) / 2 # 切り上げ
+        if nums[middle] >= target
+            right = middle - 1 # rightより右はtarget以上だと言える
+        else
+            left = middle + 1 # leftより左はtargetより小さいと言える
+        end
+    end
+    left
+end
+```
